@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>
+    <%= title %>
+  </title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+
+<body>
+  <h1>
+    <%= title %>
+  </h1>
+  <h2>Список книг</h2>
+  <div class="book-list">
+    <% if (books && books.length> 0) { %>
+      <ul>
+        <% books.forEach(function(book) { %>
+          <li class="book-item">
+            <strong>
+              <%= book.title %>
+            </strong> — автор: <%= book.author %>; ID: <%= book.id %>
+              [<a href="/books/admin?edit=<%= book.id %>">Редагувати</a>]
+              <form class="inline" action="/books/admin/delete/<%= book.id %>" method="POST">
+                <button type="submit">Видалити</button>
+              </form>
+          </li>
+          <% }); %>
+      </ul>
+      <% } else { %>
+        <p>Немає книг</p>
+        <% } %>
+  </div>
+
+  <hr>
+
+  <h2>
+    <%= bookToEdit ? "Редагувати книгу " + bookToEdit.id : "Додати нову книгу" %>
+  </h2>
+  <form method="POST" action="<%= bookToEdit ? '/books/admin/edit/' + bookToEdit.id : '/books/admin/create' %>">
+    <label for="title">Назва:</label><br>
+    <input type="text" id="title" name="title" value="<%= bookToEdit ? bookToEdit.title : '' %>" required><br><br>
+
+    <label for="author">Автор:</label><br>
+    <input type="text" id="author" name="author" value="<%= bookToEdit ? bookToEdit.author : '' %>" required><br><br>
+
+    <label for="keywords">Ключові слова (через кому):</label><br>
+    <input type="text" id="keywords" name="keywords"
+           value="<%= bookToEdit && bookToEdit.keywords ? bookToEdit.keywords.join(', ') : '' %>"><br><br>
+
+    <button type="submit">
+      <%= bookToEdit ? "Оновити книгу" : "Додати книгу" %>
+    </button>
+    <% if (bookToEdit) { %>
+      <a href="/books/admin">Скасувати редагування</a>
+      <% } %>
+  </form>
+
+  <br>
+  <a href="/books">Переглянути публічний список книг</a> |
+  <a href="/books/search">Пошук книг</a>
+</body>
+
+</html>

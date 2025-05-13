@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>
+    <%= title %>
+  </title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+
+<body>
+  <h1>
+    <%= title %>
+  </h1>
+  <form method="GET" action="/books/search">
+    <label for="q">Введіть ключове слово, назву або автора:</label><br>
+    <input type="text" id="q" name="q" value="<%= query || '' %>" placeholder="приклад: Шевченко, JavaScript" required>
+    <button type="submit">Пошук</button>
+  </form>
+
+  <hr>
+
+  <% if (typeof books !== 'undefined') { %>
+  <h2>Результати пошуку<% if (query) { %> для "<%= query %>"<% } %></h2>
+
+  <% if (books.length > 0) { %>
+  <ul>
+    <% books.forEach(function(book) { %>
+    <li>
+      <a href="/books/<%= book.id %>"><strong><%= book.title %></strong></a> — автор: <%= book.author %>
+    </li>
+    <% }); %>
+  </ul>
+  <% } else { %>
+  <p>Нічого не знайдено за запитом "<%= query %>".</p>
+  <% } %>
+  <% } %>
+
+  <br>
+  <a href="/">Повернутись на головну</a>
+</body>
+
+</html>
