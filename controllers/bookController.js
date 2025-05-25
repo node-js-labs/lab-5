@@ -40,9 +40,10 @@ exports.createBook = async (req, res) => {
 exports.updateBook = async (req, res) => {
     if (!checkAdmin(req, res)) return;
     try {
-        await bookService.updateBook(req.params.id, req.body);
+        await bookService.updateBook(req.params.id, req.body, req.session.user.id);
         res.redirect('/books/admin');
     } catch (err) {
+        console.log(err)
         res.status(500).send('Помилка оновлення книги');
     }
 };
@@ -50,7 +51,7 @@ exports.updateBook = async (req, res) => {
 exports.deleteBook = async (req, res) => {
     if (!checkAdmin(req, res)) return;
     try {
-        await bookService.deleteBook(req.params.id);
+        await bookService.deleteBook(req.params.id, req.session.user.id);
         res.redirect('/books/admin');
     } catch (err) {
         res.status(500).send('Помилка видалення книги');

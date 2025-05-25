@@ -6,7 +6,7 @@ exports.getAllBooks = async () => {
 };
 
 exports.searchBooks = async (query) => {
-  return bookRepo.searchBooks(query);
+  return bookRepo.search(query);
 };
 
 exports.createBook = async (bookData, userId) => {
@@ -17,10 +17,10 @@ exports.getBookById = async (id) => {
   return bookRepo.findById(id);
 };
 
-exports.updateBook = async (id, bookData) => {
-  return bookRepo.update(id, bookData);
+exports.updateBook = async (id, bookData, userId) => {
+  return bookRepo.update(id, bookData, userId);
 };
 
-exports.deleteBook = async (id) => {
-  return bookRepo.delete(id);
+exports.deleteBook = async (id, userId) => {
+  return bookRepo.delete(id, userId);
 };

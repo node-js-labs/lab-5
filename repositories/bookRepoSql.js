@@ -1,4 +1,5 @@
 const { Book, Log, sequelize } = require('../models');
+const { Op } = require("sequelize")
 
 exports.findAll = () => Book.findAll();
 exports.findById = id => Book.findByPk(id);
@@ -10,8 +11,7 @@ exports.create = async (bookDTO, userId) => {
 
     await Log.create({
       userId,
-      bookId:   book.id,
-      action:   'create_book',
+      action: 'create_book',
       bookTitle: book.title
     }, { transaction: t });
 
@@ -33,8 +33,7 @@ exports.update = async (id, bookDTO, userId) => {
 
     await Log.create({
       userId,
-      bookId:    id,
-      action:    'update_book',
+      action: 'update_book',
       bookTitle: bookDTO.title ?? book.title
     }, { transaction: t });
 
@@ -70,10 +69,10 @@ exports.delete = async (id, userId) => {
 exports.search = q =>
   Book.findAll({
     where: {
-      [sequelize.Op.or]: [
-        { title:    { [sequelize.Op.like]: `%${q}%` } },
-        { author:   { [sequelize.Op.like]: `%${q}%` } },
-        { keywords: { [sequelize.Op.like]: `%${q}%` } }
+      [Op.or]: [
+        { title:    { [Op.like]: `%${q}%` } },
+        { author:   { [Op.like]: `%${q}%` } },
+        { keywords: { [Op.like]: `%${q}%` } }
       ]
     }
   });
