@@ -1,85 +1,79 @@
-const pool = require('../db');
+const { Book, Log, sequelize } = require('../models');
 
-exports.findAll = async () => {
-    const [rows] = await pool.query('SELECT * FROM books');
-    return rows;
+exports.findAll = () => Book.findAll();
+exports.findById = id => Book.findByPk(id);
+
+exports.create = async (bookDTO, userId) => {
+  const t = await sequelize.transaction();
+  try {
+    const book = await Book.create(bookDTO, { transaction: t });
+
+    await Log.create({
+      userId,
+      bookId:   book.id,
+      action:   'create_book',
+      bookTitle: book.title
+    }, { transaction: t });
+
+    await t.commit();
+    return book;
+  } catch (e) {
+    await t.rollback();
+    throw e;
+  }
 };
 
-exports.findById = async (id) => {
-    const [rows] = await pool.query('SELECT * FROM books WHERE id = ?', [id]);
-    return rows[0];
+exports.update = async (id, bookDTO, userId) => {
+  const t = await sequelize.transaction();
+  try {
+    const book = await Book.findByPk(id, { transaction: t });
+    if (!book) throw new Error('Book not found');
+
+    await book.update(bookDTO, { transaction: t });
+
+    await Log.create({
+      userId,
+      bookId:    id,
+      action:    'update_book',
+      bookTitle: bookDTO.title ?? book.title
+    }, { transaction: t });
+
+    await t.commit();
+    return book;
+  } catch (e) {
+    await t.rollback();
+    throw e;
+  }
 };
 
-const logRepo = require('./logRepoSql'); // створити або підключити
+exports.delete = async (id, userId) => {
+  const t = await sequelize.transaction();
+  try {
+    const book = await Book.findByPk(id, { transaction: t });
+    if (!book) throw new Error('Nothing to delete');
 
-exports.create = async (book, userId) => {
-    const connection = await pool.getConnection();
-    try {
-        await connection.beginTransaction();
+    await book.destroy({ transaction: t });
 
-        const { title, author, keywords } = book;
-        const [result] = await connection.query(
-            'INSERT INTO books (title, author, keywords) VALUES (?, ?, ?)',
-            [title, author, keywords]
-        );
+    await Log.create({
+      userId,
+      bookTitle: book.title,
+      action:    'delete_book'
+    }, { transaction: t });
 
-        const bookId = result.insertId;
+    await t.commit();
+  } catch (e) {
+    await t.rollback();
+    throw e;
+  }
+};
 
-        await connection.query(
-            'INSERT INTO logs (user_id, action, book_title) VALUES (?, ?, ?)',
-            [userId, 'create_book', title]
-        );
-
-        await connection.commit();
-        return { id: bookId, ...book };
-    } catch (err) {
-        await connection.rollback();
-        throw err;
-    } finally {
-        connection.release();
+exports.search = q =>
+  Book.findAll({
+    where: {
+      [sequelize.Op.or]: [
+        { title:    { [sequelize.Op.like]: `%${q}%` } },
+        { author:   { [sequelize.Op.like]: `%${q}%` } },
+        { keywords: { [sequelize.Op.like]: `%${q}%` } }
+      ]
     }
-};
-
-
-exports.update = async (id, book) => {
-    const connection = await pool.getConnection();
-    try {
-        await connection.beginTransaction();
-
-        const { title, author, keywords } = book;
-        await connection.query(
-            'UPDATE books SET title = ?, author = ?, keywords = ? WHERE id = ?',
-            [title, author, keywords, id]
-        );
-
-        await connection.commit();
-        return this.findById(id);
-    } catch (err) {
-        await connection.rollback();
-        throw err;
-    } finally {
-        connection.release();
-    }
-};
-
-exports.delete = async (id) => {
-    const connection = await pool.getConnection();
-    try {
-        await connection.beginTransaction();
-
-        await connection.query('DELETE FROM books WHERE id = ?', [id]);
-
-        await connection.commit();
-    } catch (err) {
-        await connection.rollback();
-        throw err;
-    } finally {
-        connection.release();
-    }
-};
-
-exports.searchBooks = async (query) => {
-    const sql = 'SELECT * FROM books WHERE title LIKE ? OR author LIKE ? OR keywords LIKE ?';
-    const [rows] = await pool.execute(sql, [`%${query}%`, `%${query}%`, `%${query}%`]);
-    return rows;
-};
+  });

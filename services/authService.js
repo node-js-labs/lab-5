@@ -13,8 +13,7 @@ exports.getUserById = async (id) => {
 };
 
 exports.findByUsername = async (username) => {
-  const users = await authRepo.findAll();
-  return users.find(user => user.username === username);
+  return authRepo.findByUsername(username);
 };
 
 exports.updateUser = async (id, userData) => {

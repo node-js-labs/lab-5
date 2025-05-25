@@ -1,47 +1,53 @@
-const pool = require('../db');
+const { User, sequelize } = require('../models');
 
-exports.findAll = async () => {
-    const [rows] = await pool.query('SELECT * FROM users');
-    return rows;
-};
+exports.findAll        = () => User.findAll();
+exports.findById       = id => User.findByPk(id);
+exports.findByUsername = username => User.findOne({ where: { username } });
 
-exports.findById = async (id) => {
-    const [rows] = await pool.query('SELECT * FROM users WHERE id = ?', [id]);
-    return rows[0];
-};
-
-exports.findByUsername = async (username) => {
-    const [rows] = await pool.query('SELECT * FROM users WHERE username = ?', [username]);
-    return rows[0];
-};
-
-exports.create = async (user) => {
-    const { username, name, surname, password, role } = user;
-    const [result] = await pool.query(
-        'INSERT INTO users (username, name, surname, password, role) VALUES (?, ?, ?, ?, ?)',
-        [username, name, surname, password, role || 'user']
+exports.create = async dto => {
+  const t = await sequelize.transaction();
+  try {
+    // жодного хешування: пароль записуємо «як є»
+    const user = await User.create(
+      { ...dto, role: dto.role || 'user' },
+      { transaction: t }
     );
-    return { id: result.insertId, ...user };
+    await t.commit();
+    return user;
+  } catch (e) {
+    await t.rollback();
+    throw e;
+  }
 };
 
-exports.update = async (id, user) => {
-    const { username, name, surname, password } = user;
+exports.update = async (id, dto) => {
+  const t = await sequelize.transaction();
+  try {
+    const user = await User.findByPk(id, { transaction: t });
+    if (!user) throw new Error('User not found');
 
-    if (!password) {
-        await pool.query(
-            'UPDATE users SET username = ?, name = ?, surname = ? WHERE id = ?',
-            [username, name, surname, id]
-        );
-    } else {
-        await pool.query(
-            'UPDATE users SET username = ?, name = ?, surname = ?, password = ? WHERE id = ?',
-            [username, name, surname, password, id]
-        );
-    }
+    // якщо пароль не передано — не змінюємо
+    if (!dto.password) delete dto.password;
 
-    return this.findById(id);
+    await user.update(dto, { transaction: t });
+    await t.commit();
+    return user;
+  } catch (e) {
+    await t.rollback();
+    throw e;
+  }
 };
 
-exports.delete = async (id) => {
-    await pool.query('DELETE FROM users WHERE id = ?', [id]);
+exports.delete = async id => {
+  const t = await sequelize.transaction();
+  try {
+    const user = await User.findByPk(id, { transaction: t });
+    if (!user) throw new Error('Nothing to delete');
+
+    await user.destroy({ transaction: t });
+    await t.commit();
+  } catch (e) {
+    await t.rollback();
+    throw e;
+  }
 };

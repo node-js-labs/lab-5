@@ -1,7 +1,13 @@
-const db = require('../db');
+const { Log } = require('../models');
 
-exports.create = async (log, conn) => {
-    const sql = 'INSERT INTO logs (user_id, action, book_title) VALUES (?, ?, ?)';
-    const params = [log.user_id, log.action, log.book_title];
-    await conn.execute(sql, params);
+exports.create = (log, tx) => {
+  return Log.create(
+    {
+      userId:     log.userId ?? log.user_id,
+      bookId:     log.bookId ?? log.book_id ?? null,
+      action:     log.action,
+      bookTitle:  log.bookTitle ?? log.book_title
+    },
+    { transaction: tx }
+  );
 };

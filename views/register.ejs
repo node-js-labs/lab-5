@@ -1,5 +1,10 @@
 <%- include('partials/header', { title }) %>
 <h1 class="mb-4">Реєстрація</h1>
+<% if (typeof error !=='undefined' ) { %>
+<div class="alert alert-danger">
+  <%= error %>
+</div>
+<% } %>
 <form action="/register" method="POST" class="row g-3">
   <div class="col-md-6"><input type="text" name="username" class="form-control" placeholder="Логін" required></div>
   <div class="col-md-6"><input type="text" name="surname" class="form-control" placeholder="Прізвище" required></div>

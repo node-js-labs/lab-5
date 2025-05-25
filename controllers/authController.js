@@ -13,7 +13,7 @@ exports.register = async (req, res) => {
         req.session.user = newUser; // автоматичний вхід після реєстрації
         res.redirect('/profile');
     } catch (err) {
-        res.status(500).send('Помилка реєстрації користувача');
+        res.render('register', { title: "Реєстрація", error: 'Помилка реєстрації користувача; Може логін зайнятий?' });
     }
 };
 
