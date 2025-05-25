@@ -9,31 +9,23 @@ const readData = () => {
 };
 
 const processData = (data) => {
-  console.log("HI")
   if (data === undefined || data === null) {
     throw new Error("Не надано вхідних даних");
   }
 
   let jsonData = data;
-  console.log("A")
   if (jsonData.keywords) {
-    console.log("A")
     if (typeof jsonData.keywords === 'string') {
-      console.log("B")
       jsonData.keywords = jsonData.keywords
         .split(/\s*,\s*/)
         .map(keyword => keyword.trim());
-        console.log("B")
     } else if (Array.isArray(jsonData.keywords)) {
-      console.log("C")
       jsonData.keywords = jsonData.keywords.map(keyword =>
         typeof keyword === 'string' ? keyword.trim() : keyword
       );
-      console.log("C")
     }
   }
 
-  console.log("CD")
   return jsonData;
 };
 
