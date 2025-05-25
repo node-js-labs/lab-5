@@ -1,3 +1,5 @@
-<h1><%= message %></h1>
-<h2><%= error.status %></h2>
-<pre><%= error.stack %></pre>
+<%- include('partials/header', { title: message }) %>
+<h1 class="mb-3"><%= message %></h1>
+<h2 class="text-danger mb-3"><%= error.status %></h2>
+<pre class="bg-light p-3 rounded"><%= error.stack %></pre>
+<%- include('partials/footer') %>

@@ -1,33 +1,21 @@
-<!DOCTYPE html>
-<html lang="uk">
+<%- include('./partials/header', { title, isAuthenticated, currentUser }) %>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>
-    <%= title %>
-  </title>
-  <link rel="stylesheet" href="/styles.css">
-</head>
+<h1 class="mb-4"><%= title %></h1>
 
-<body>
-  <h1>
-    <%= title %>
-  </h1>
-  <% if (books && books.length> 0) { %>
-  <ul>
+<% if (books && books.length > 0) { %>
+  <ul class="list-group mb-4">
     <% books.forEach(function(book) { %>
-    <li>
-      <a href="/books/<%= book.id %>"><strong>
+      <li class="list-group-item">
+        <a href="/books/<%= book.id %>" class="text-decoration-none fw-bold">
           <%= book.title %>
-        </strong></a> — автор: <%= book.author %>
-    </li>
-    <% }); %>
+        </a> — автор: <%= book.author %>
+      </li>
+    <% }) %>
   </ul>
-  <% } else { %>
-  <p>Немає книг.</p>
-  <% } %>
-  <a href="/">Повернутися на головну</a>
-</body>
+<% } else { %>
+  <p class="text-muted">Немає книг.</p>
+<% } %>
 
-</html>
+<a href="/" class="btn btn-secondary">Повернутися на головну</a>
+
+<%- include('./partials/footer') %>

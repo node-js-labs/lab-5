@@ -1,67 +1,53 @@
-<!DOCTYPE html>
-<html lang="uk">
-
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>
-    <%= title %>
-  </title>
-  <link rel="stylesheet" href="/styles.css">
-</head>
-
-<body>
-  <h1>
-    <%= title %>
-  </h1>
-  <h2>Список книг</h2>
-  <div class="book-list">
-    <% if (books && books.length> 0) { %>
-      <ul>
-        <% books.forEach(function(book) { %>
-          <li class="book-item">
-            <strong>
-              <%= book.title %>
-            </strong> — автор: <%= book.author %>; ID: <%= book.id %>
-              [<a href="/books/admin?edit=<%= book.id %>">Редагувати</a>]
-              <form class="inline" action="/books/admin/delete/<%= book.id %>" method="POST">
-                <button type="submit">Видалити</button>
-              </form>
-          </li>
-          <% }); %>
-      </ul>
-      <% } else { %>
-        <p>Немає книг</p>
-        <% } %>
+<%- include('./partials/header', { title }) %>
+<h1 class="mb-4">
+  <%= title %>
+</h1>
+<h2 class="h5">Список книг</h2>
+<% if (books && books.length> 0) { %>
+<ul class="list-group mb-4">
+  <% books.forEach(function(book) { %>
+  <li class="list-group-item d-flex justify-content-between align-items-start">
+    <div>
+      <strong>
+        <%= book.title %>
+      </strong> — автор: <%= book.author %>; ID: <%= book.id %>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="/books/admin?edit=<%= book.id %>" class="btn btn-sm btn-outline-primary">Редагувати</a>
+      <form action="/books/admin/delete/<%= book.id %>" method="POST">
+        <button type="submit" class="btn btn-sm btn-outline-danger">Видалити</button>
+      </form>
+    </div>
+  </li>
+  <% }) %>
+</ul>
+<% } else { %>
+<p class="text-muted">Немає книг</p>
+<% } %>
+<h2 class="h5 mb-3">
+  <%= bookToEdit ? "Редагувати книгу " + bookToEdit.id : "Додати нову книгу" %>
+</h2>
+<form class="row g-3 mb-4" method="POST" action="<%= bookToEdit ? '/books/admin/edit/' + bookToEdit.id : '/books/admin/create' %>">
+  <div class="col-md-6">
+    <label class="form-label">Назва</label>
+    <input type="text" name="title" class="form-control" value="<%= bookToEdit ? bookToEdit.title : '' %>" required>
   </div>
-
-  <hr>
-
-  <h2>
-    <%= bookToEdit ? "Редагувати книгу " + bookToEdit.id : "Додати нову книгу" %>
-  </h2>
-  <form method="POST" action="<%= bookToEdit ? '/books/admin/edit/' + bookToEdit.id : '/books/admin/create' %>">
-    <label for="title">Назва:</label><br>
-    <input type="text" id="title" name="title" value="<%= bookToEdit ? bookToEdit.title : '' %>" required><br><br>
-
-    <label for="author">Автор:</label><br>
-    <input type="text" id="author" name="author" value="<%= bookToEdit ? bookToEdit.author : '' %>" required><br><br>
-
-    <label for="keywords">Ключові слова (через кому):</label><br>
-    <input type="text" id="keywords" name="keywords"
-           value="<%= bookToEdit && bookToEdit.keywords ? bookToEdit.keywords.join(', ') : '' %>"><br><br>
-
-    <button type="submit">
+  <div class="col-md-6">
+    <label class="form-label">Автор</label>
+    <input type="text" name="author" class="form-control" value="<%= bookToEdit ? bookToEdit.author : '' %>" required>
+  </div>
+  <div class="col-12">
+    <label class="form-label">Ключові слова (через кому)</label>
+    <input type="text" name="keywords" class="form-control" value="<%= bookToEdit && bookToEdit.keywords ? bookToEdit.keywords.join(', ') : '' %>">
+  </div>
+  <div class="col-12 d-flex gap-2">
+    <button type="submit" class="btn btn-success">
       <%= bookToEdit ? "Оновити книгу" : "Додати книгу" %>
     </button>
     <% if (bookToEdit) { %>
-      <a href="/books/admin">Скасувати редагування</a>
-      <% } %>
-  </form>
-
-  <br>
-  <a href="/books">Переглянути публічний список книг</a> |
-  <a href="/books/search">Пошук книг</a>
-</body>
-
-</html>
+    <a href="/books/admin" class="btn btn-secondary">Скасувати</a>
+    <% } %>
+  </div>
+</form>
+<a class="btn btn-secondary" href="/">На головну</a>
+<%- include('./partials/footer') %>

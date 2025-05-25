@@ -1,68 +1,43 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/stylesheets/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <title>ЄМ</title>
-    <style>
-    </style>
-</head>
-<body>
-<div class="main-and-menu">
-    <div class="navbar">
-        <div class="logo">
-            <i class="fa fa-book"></i>
-            <a href="/">Бібліотека ЄМ</a>
-        </div>
-        <div class="signin-btn">
-            <% if (isAuthenticated) { %>
-                <a href="/profile">Вітаємо, <%= currentUser.username %>!</a>
-                <a href="/logout">Вийти</a>
-            <% } else { %>
-                <a href="/login">Увійти</a> | <a href="/register">Реєстрація</a>
-            <% } %>
-        </div>
-    </div>
+<%- include('partials/header', { title: 'ЄМ – Бібліотека', isAuthenticated, currentUser }) %>
 
-    <br><br><br>
+<header class="bg-light py-5">
+  <div class="container text-center">
+    <h1 class="display-5 fw-bold mb-4">Читаємо разом!</h1>
+    <a href="/books/search" class="btn btn-lg btn-success">
+      <i class="fa fa-search me-2"></i>Знайти книгу
+    </a>
+  </div>
+</header>
 
-    <div class="plain-text">
-        <h1>Читаємо разом!</h1>
-        <br><br>
-        <div class="buttons">
-            <a href="/books/search">
-                <div class="find"><i class="fa fa-search"></i> Знайти книгу</div>
-            </a>
-        </div>
-    </div>
-</div>
-<div class="why-to-use">
-    <br><br>
-    <h1>Чому саме ЄМ?</h1>
-    <div class="container">
-        <ul class="custom-list">
-            <li>Лідер серед бібліотек міста за рейтингом</li>
-            <li>Небайдужа адміністрація сайту</li>
-            <li>Швидко, зрозуміло</li>
-            <li>Безліч варіантів</li>
-        </ul>
-    </div>
+<section class="py-5">
+  <div class="container">
+    <h2 class="text-center mb-4">Чому саме ЄМ?</h2>
+    <ul class="list-group list-group-flush mx-auto" style="max-width:30rem">
+      <li class="list-group-item">Лідер серед бібліотек міста за рейтингом</li>
+      <li class="list-group-item">Небайдужа адміністрація сайту</li>
+      <li class="list-group-item">Швидко, зрозуміло</li>
+      <li class="list-group-item">Безліч варіантів</li>
+    </ul>
+  </div>
+</section>
 
-</div>
-<div class="icons">
-    <div class="row">
-        <div class="box">
-            <i class="fa fa-sign-in"></i>
-            <span>Зареєструйтесь / ввійдіть на наш сайт</span>
+<section class="bg-light py-5">
+  <div class="container">
+    <div class="row g-4 text-center">
+      <div class="col-12 col-md-6">
+        <div class="p-4 border rounded h-100">
+          <i class="fa fa-sign-in fa-2x mb-3"></i>
+          <p class="mb-0">Зареєструйтесь / ввійдіть на наш сайт</p>
         </div>
-        <div class="box">
-            <i class="fa fa-list"></i>
-            <span>Оберіть книгу</span>
+      </div>
+      <div class="col-12 col-md-6">
+        <div class="p-4 border rounded h-100">
+          <i class="fa fa-list fa-2x mb-3"></i>
+          <p class="mb-0">Оберіть книгу</p>
         </div>
+      </div>
     </div>
-</div>
-<div class="footer"></div>
-</body>
-</html>
+  </div>
+</section>
+
+<%- include('partials/footer') %>
